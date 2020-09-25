@@ -90,7 +90,7 @@ public class Rocket : MonoBehaviour
 
     private void CheckRotateInput()
     {
-        rigidBody.freezeRotation = true;
+        rigidBody.angularVelocity = Vector3.zero;
 
         if (!(Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D)))
         {
@@ -103,8 +103,6 @@ public class Rocket : MonoBehaviour
                 transform.Rotate(Vector3.back * (rcsThrust * Time.deltaTime));
             }
         }
-
-        rigidBody.freezeRotation = false;
     }
 
     private void LoadNextScene()
