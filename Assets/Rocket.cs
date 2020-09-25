@@ -31,15 +31,28 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        processInput();
+        ProcessInput();
     }
 
-    void processInput()
+    void ProcessInput()
     {
         if (state == State.Alive)
         {
             CheckThrustInput();
             CheckRotateInput();
+            CheckDebugInput();
+        }
+    }
+
+    private void CheckDebugInput()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            StartFinishSequence();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            rigidBody.detectCollisions = !rigidBody.detectCollisions;
         }
     }
 
@@ -47,7 +60,7 @@ public class Rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            applyThrust();
+            ApplyThrust();
         }
         else
         {
@@ -62,7 +75,7 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    private void applyThrust()
+    private void ApplyThrust()
     {
         rigidBody.AddRelativeForce(Vector3.up * (mainThrust * Time.deltaTime));
         if (!audioSource.isPlaying)
@@ -94,12 +107,13 @@ public class Rocket : MonoBehaviour
         rigidBody.freezeRotation = false;
     }
 
-    private void loadNextScene()
+    private void LoadNextScene()
     {
         switch(state)
         {
             case State.Transcending:
-                SceneManager.LoadScene(1);
+                int nextScene = SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1 ? SceneManager.GetActiveScene().buildIndex + 1 : 0;
+                SceneManager.LoadScene(nextScene);
                 break;
             case State.Dying:
                 SceneManager.LoadScene(0);
@@ -136,7 +150,7 @@ public class Rocket : MonoBehaviour
         audioSource.Stop();
         audioSource.PlayOneShot(success);
         successSystem.Play();
-        Invoke("loadNextScene", sceneTransitionSeconds);
+        Invoke("LoadNextScene", sceneTransitionSeconds);
     }
 
     private void StartDeathSequence()
@@ -146,6 +160,6 @@ public class Rocket : MonoBehaviour
         audioSource.Stop();
         audioSource.PlayOneShot(death, .5f);
         deathSystem.Play();
-        Invoke("loadNextScene", sceneTransitionSeconds);
+        Invoke("LoadNextScene", sceneTransitionSeconds);
     }
 }
